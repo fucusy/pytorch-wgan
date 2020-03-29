@@ -204,24 +204,23 @@ class WGAN_GP(object):
             self.g_optimizer.step()
 
             # Saving model and sampling images every 1000th generator iterations
-            if (g_iter) % 100 == 0:
+            if (g_iter) % 2 == 0:
                 self.save_model()
                 # # Workaround because graphic card memory can't store more than 830 examples in memory for generating image
                 # # Therefore doing loop and generating 800 examples and stacking into list of samples to get 8000 generated images
                 # # This way Inception score is more correct since there are different generated examples from every class of Inception model
                 # sample_list = []
-                # for i in range(125):
-                #     samples  = self.data.__next__()
-                # #     z = Variable(torch.randn(800, 100, 1, 1)).cuda(self.cuda_index)
-                # #     samples = self.G(z)
-                #     sample_list.append(samples.data.cpu().numpy())
-                # #
-                # # # Flattening list of list into one list
-                # new_sample_list = list(chain.from_iterable(sample_list))
-                # print("Calculating Inception Score over 8k generated images")
-                # # # Feeding list of numpy arrays
-                # inception_score = get_inception_score(new_sample_list, cuda=True, batch_size=32,
-                #                                       resize=True, splits=10)
+                for i in range(125):
+                    z = Variable(torch.randn(800, 100, 1, 1)).cuda(self.cuda_index)
+                    samples = self.G(z)
+                    sample_list.append(samples.data.cpu().numpy())
+                #
+                # # Flattening list of list into one list
+                new_sample_list = list(chain.from_iterable(sample_list))
+                print("Calculating Inception Score over 8k generated images")
+                # # Feeding list of numpy arrays
+                inception_score = get_inception_score(new_sample_list, cuda=True, batch_size=32,
+                                                       resize=True, splits=10)
 
                 if not os.path.exists('training_result_images/'):
                     os.makedirs('training_result_images/')
@@ -241,8 +240,9 @@ class WGAN_GP(object):
                 print("Time {}".format(time))
 
                 # Write to file inception_score, gen_iters, time
-                #output = str(g_iter) + " " + str(time) + " " + str(inception_score[0]) + "\n"
-                #self.file.write(output)
+                output = str(g_iter) + " " + str(time) + " " + str(inception_score[0]) + "\n"
+                print(output)
+                self.file.write(output)
 
 
                 # ============ TensorBoard logging ============#
