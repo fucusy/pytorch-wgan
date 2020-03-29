@@ -204,7 +204,7 @@ class WGAN_GP(object):
             self.g_optimizer.step()
 
             # Saving model and sampling images every 1000th generator iterations
-            if (g_iter) % 2 == 0:
+            if (g_iter) % 100 == 0:
                 self.save_model()
                 # # Workaround because graphic card memory can't store more than 830 examples in memory for generating image
                 # # Therefore doing loop and generating 800 examples and stacking into list of samples to get 8000 generated images
