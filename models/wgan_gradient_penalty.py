@@ -8,6 +8,7 @@ import matplotlib.pyplot as plt
 plt.switch_backend('agg')
 import os
 from utils.tensorboard_logger import Logger
+from utils.inception_score import get_inception_score
 from itertools import chain
 from torchvision import utils
 
@@ -204,12 +205,12 @@ class WGAN_GP(object):
             self.g_optimizer.step()
 
             # Saving model and sampling images every 1000th generator iterations
-            if (g_iter) % 2 == 0:
+            if (g_iter) % 500 == 0:
                 self.save_model()
                 # # Workaround because graphic card memory can't store more than 830 examples in memory for generating image
                 # # Therefore doing loop and generating 800 examples and stacking into list of samples to get 8000 generated images
                 # # This way Inception score is more correct since there are different generated examples from every class of Inception model
-                # sample_list = []
+                sample_list = []
                 for i in range(125):
                     z = Variable(torch.randn(800, 100, 1, 1)).cuda(self.cuda_index)
                     samples = self.G(z)
